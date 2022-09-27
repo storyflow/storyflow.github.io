@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="null">
+  <meta name="author" content="怦然心动">
+  <meta name="keywords" content="undefined">
+  
+  <title>HTTP协议入门 - 怦然心动</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"storyflow.github.io","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>怦然心动</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="HTTP协议入门">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2017-05-23 23:13" pubdate>
+        2017年5月23日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      865 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      12
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HTTP协议入门</h1>
+            
+            <div class="markdown-body">
+              <h1 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a>版本说明</h1><h2 id="一-HTTP-0-99版本"><a href="#一-HTTP-0-99版本" class="headerlink" title="一. HTTP 0.99版本"></a>一. HTTP 0.99版本</h2><p>命令:GET<br>用法: GET /index.html<br>响应:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>Hello World<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure></p>
+<h2 id="二-HTTP-1-0版本"><a href="#二-HTTP-1-0版本" class="headerlink" title="二. HTTP 1.0版本"></a>二. HTTP 1.0版本</h2><ol>
+<li>命令: GET、POST、HEAD</li>
+<li><p>通用头部:主要用于传达关于消息本身的信息，而不是它所携带的内容。</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">Request URL:http:<span class="hljs-comment">//www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html</span><br>Request <span class="hljs-function"><span class="hljs-keyword">Method</span>:</span>GET<br>Status Code:<span class="hljs-number">200</span> OK<br>Remote Address:<span class="hljs-number">116.251</span>.<span class="hljs-number">204.42</span>:<span class="hljs-number">80</span><br>Referrer Policy:no-referrer-when-downgrade<br></code></pre></td></tr></table></figure>
+<p>请求格式:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Accept</span>:text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Encoding:gzip, deflate, sdch<br><span class="hljs-attribute">Accept</span>-Language:zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Cache</span>-Control:max-age=<span class="hljs-number">0</span><br><span class="hljs-attribute">Connection</span>:keep-alive<br><span class="hljs-attribute">Cookie</span>:_ga=GA<span class="hljs-number">1</span>.<span class="hljs-number">2</span>.<span class="hljs-number">81864988</span>.<span class="hljs-number">1486909163</span>; _gid=GA<span class="hljs-number">1</span>.<span class="hljs-number">2</span>.<span class="hljs-number">993479087</span>.<span class="hljs-number">1495547947</span><br><span class="hljs-attribute">Host</span>:www.ruanyifeng.com<br><span class="hljs-attribute">If</span>-Modified-Since:Thu, <span class="hljs-number">18</span> May <span class="hljs-number">2017</span> <span class="hljs-number">00</span>:<span class="hljs-number">37</span>:<span class="hljs-number">52</span> GMT<br><span class="hljs-attribute">If</span>-None-Match:<span class="hljs-string">&quot;3dc9a-54fc19d6cf800-gzip&quot;</span><br><span class="hljs-attribute">Referer</span>:http://www.ruanyifeng.com/blog/<span class="hljs-number">2016</span>/<span class="hljs-number">08</span>/http.html<br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests:<span class="hljs-number">1</span><br><span class="hljs-attribute">User</span>-Agent:Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">10</span>.<span class="hljs-number">0</span>; Win<span class="hljs-number">64</span>; x<span class="hljs-number">64</span>) AppleWebKit/<span class="hljs-number">537</span>.<span class="hljs-number">36</span> (KHTML, like Gecko) Chrome/<span class="hljs-number">58</span>.<span class="hljs-number">0</span>.<span class="hljs-number">3029</span>.<span class="hljs-number">96</span> Safari/<span class="hljs-number">537</span>.<span class="hljs-number">36</span>Accept-Ranges:bytes<br><span class="hljs-attribute">Connection</span>:Keep-Alive<br><span class="hljs-attribute">Content</span>-Encoding:gzip<br><span class="hljs-attribute">Content</span>-Length:<span class="hljs-number">48951</span><br><span class="hljs-attribute">Content</span>-Type:text/html<br><span class="hljs-attribute">Date</span>:Tue, <span class="hljs-number">23</span> May <span class="hljs-number">2017</span> <span class="hljs-number">14</span>:<span class="hljs-number">03</span>:<span class="hljs-number">26</span> GMT<br><span class="hljs-attribute">ETag</span>:<span class="hljs-string">&quot;3dc9a-54fc19d6cf800-gzip&quot;</span><br><span class="hljs-attribute">Keep</span>-Alive:timeout=<span class="hljs-number">5</span>, max=<span class="hljs-number">100</span><br><span class="hljs-attribute">Last</span>-Modified:Thu, <span class="hljs-number">18</span> May <span class="hljs-number">2017</span> <span class="hljs-number">00</span>:<span class="hljs-number">37</span>:<span class="hljs-number">52</span> GMT<br><span class="hljs-attribute">Server</span>:Apache<br><span class="hljs-attribute">Vary</span>:Accept-Encoding<br></code></pre></td></tr></table></figure>
+<p>响应格式:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Accept</span>-Ranges:bytes<br><span class="hljs-attribute">Connection</span>:Keep-Alive<br><span class="hljs-attribute">Content</span>-Encoding:gzip<br><span class="hljs-attribute">Content</span>-Length:<span class="hljs-number">48951</span><br><span class="hljs-attribute">Content</span>-Type:text/html<br><span class="hljs-attribute">Date</span>:Tue, <span class="hljs-number">23</span> May <span class="hljs-number">2017</span> <span class="hljs-number">14</span>:<span class="hljs-number">03</span>:<span class="hljs-number">26</span> GMT<br><span class="hljs-attribute">ETag</span>:<span class="hljs-string">&quot;3dc9a-54fc19d6cf800-gzip&quot;</span><br><span class="hljs-attribute">Keep</span>-Alive:timeout=<span class="hljs-number">5</span>, max=<span class="hljs-number">100</span><br><span class="hljs-attribute">Last</span>-Modified:Thu, <span class="hljs-number">18</span> May <span class="hljs-number">2017</span> <span class="hljs-number">00</span>:<span class="hljs-number">37</span>:<span class="hljs-number">52</span> GMT<br><span class="hljs-attribute">Server</span>:Apache<br><span class="hljs-attribute">Vary</span>:Accept-Encoding<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>详细说明<br>Content-Encoding：数据的压缩方法<br>Content-Type:数据格式</p>
+</li>
+<li><p>缺点</p>
+</li>
+</ol>
+<blockquote>
+<p>HTTP/1.0 版的主要缺点是，每个TCP连接只能发送一个请求。发送数据完毕，连接就关闭，如果还要请求其他资源，就必须再新建一个连接。</p>
+</blockquote>
+<p>解决方法：Connection: keep-alive</p>
+<h2 id="三、-HTTP-1-1"><a href="#三、-HTTP-1-1" class="headerlink" title="三、 HTTP/1.1"></a>三、 HTTP/1.1</h2><ol>
+<li>持久连接</li>
+<li>管道机制</li>
+<li>Content-Length 字段</li>
+</ol>
+<h1 id="HTTP基础"><a href="#HTTP基础" class="headerlink" title="HTTP基础"></a>HTTP基础</h1><p>一、HTTP方法<br>|HTTP方法| 描述|<br>| :——–   | —–  |<br>|GET    |从服务器向客户端发送命名资源|<br>|PUT    |将客户端的数据存储到一个命名的服务器资源中去|<br>|DELETE |从客户端删除命名资源|<br>|POST   |将客户端数据发送到一个服务器网关应用程序|<br>|HEAD   |仅发送命名资源相应中的HTTP头部|</p>
+<p>二、状态码<br>|整体范围|已定义范围|分类|<br>|:–:|:–:|:–:|<br>|100-199|100-101|信息提示|<br>|200-299|200-206|成功|<br>|300-399|300-305|重定向|<br>|400-499|400-415|客户端错误|<br>|500-599|500-505|服务器错误|</p>
+<p>三、网络模型<br>|模型层次| 描述|例子<br>| :——–   | —–  |<br>|HTTP    |应用层|DHCP（v6） DNS FTP Gopher HTTP（SPDY、HTTP/2） IMAP4 IRC NNTP XMPP POP3 SIP SMTP SNMP SSH TELNET RPC RTCP RTP RTSP SDP SOAP GTP STUN NTP SSDP|<br>|TCP     |传输层|TCP（T/TCP · Fast Open） UDP DCCP SCTP RSVP PPTP TLS/SSL|<br>|IP      |网络层|IP（v4·v6） ICMP（v6） IGMP IS-IS IPsec BGP RIP OSPF RARP|<br>|链路层  |数据链路层|Wi-Fi（IEEE 802.11） ARP WiMAX（IEEE 802.16） ATM DTM 令牌环 以太网 FDDI 帧中继 GPRS EV-DO HSPA HDLC PPP PPPoE L2TP ISDN SPB STP|<br>|物理网络硬件| 物理层|以太网 调制解调器 电力线通信 同步光网络 G.709 光导纤维 同轴电缆 双绞线|</p>
+<p>四、从输入URL到页面加载完成的过程中都发生了什么事情</p>
+<ol>
+<li>浏览器查找域名的IP地址:这一步包括DNS具体的查找过程，包括：浏览器缓存-&gt;系统缓存-&gt;路由器缓存…</li>
+<li>浏览器向web服务器发送一个HTTP请求;</li>
+<li>服务器的永久重定向响应; </li>
+<li>浏览器跟踪重定向地址; </li>
+<li>服务器处理请求;</li>
+<li>服务器返回一个HTTP响应; </li>
+<li>浏览器显示HTML;</li>
+<li>浏览器发送请求获取嵌入在HTML中的资源（如图片、音频、视频、CSS、JS等等）;</li>
+<li>浏览器发送异步请求;</li>
+</ol>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/HTTP/">HTTP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/05/30/MVC%E4%B8%AD%E7%9A%84service%E5%B1%82%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84%EF%BC%9F/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MVC中的service层是干嘛的？</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/05/17/PHP%E7%A8%8B%E5%BA%8F%E5%A6%82%E4%BD%95debug/">
+                        <span class="hidden-mobile">PHP程序如何debug?</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="SOHUCS" sid='https://storyflow.github.io/2017/05/23/HTTP%E5%8D%8F%E8%AE%AE%E5%85%A5%E9%97%A8/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      var appid = 'cytCd1mt3';
+      var conf = '1d61dd8b796b9d212a6fae1b83a51843';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+        window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+      } else {
+        Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+          window.changyan.api.config({"appid":"cytCd1mt3","appkey":"1d61dd8b796b9d212a6fae1b83a51843"})
+        });
+      }
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

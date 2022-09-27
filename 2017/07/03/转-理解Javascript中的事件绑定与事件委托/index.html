@@ -1,0 +1,465 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="null">
+  <meta name="author" content="怦然心动">
+  <meta name="keywords" content="undefined">
+  
+  <title>[转]理解Javascript中的事件绑定与事件委托 - 怦然心动</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"storyflow.github.io","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>怦然心动</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="[转]理解Javascript中的事件绑定与事件委托">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2017-07-03 15:09" pubdate>
+        2017年7月3日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      31
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">[转]理解Javascript中的事件绑定与事件委托</h1>
+            
+            <div class="markdown-body">
+              <h1 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h1><h2 id="最直接的事件绑定：HTML事件处理程序"><a href="#最直接的事件绑定：HTML事件处理程序" class="headerlink" title="最直接的事件绑定：HTML事件处理程序"></a>最直接的事件绑定：HTML事件处理程序</h2><p>如下示例代码，通过节点属性显式声明，直接在HTML中，显式地为按钮绑定了click事件，当该按钮有用户点击行为时，便会触发myClickFunc方法。<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/* html */</span><br>&lt;button id=<span class="hljs-string">&quot;btn&quot;</span> onclick=<span class="hljs-string">&quot;myClickFunc()&quot;</span>&gt;<br>    ClickMe<br>&lt;/button&gt;<br><br><span class="hljs-regexp">/* js */</span><br><span class="hljs-regexp">//</span> 事件处理程序<br>var myClickFunc = <span class="hljs-keyword">function</span>(evt)&#123;<br>    <span class="hljs-regexp">//</span> TODO..<br>&#125;;<br><br><span class="hljs-regexp">//</span> 移除事件处理程序<br>myClickFunc = <span class="hljs-keyword">function</span>()&#123;&#125;;<br></code></pre></td></tr></table></figure><br>显而易见，这种绑定方式非常不友好，HTML代码和JS代码严重耦合在一起，比如当要修改一个函数名时候，就要修改两次，</p>
+<h2 id="DOM-0-级事件处理程序"><a href="#DOM-0-级事件处理程序" class="headerlink" title="DOM 0 级事件处理程序"></a>DOM 0 级事件处理程序</h2><p>通过DOM操作动态绑定事件，是一种比较传统的方式，把一个函数赋值给事件处理程序。这种方式也是应用较多的方式，比较简单。看下面例子：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/* html */</span><br>&lt;button id=<span class="hljs-string">&quot;btn&quot;</span>&gt;ClickMe&lt;/button&gt;<br><br><span class="hljs-regexp">/* js */</span><br><span class="hljs-regexp">//</span> 事件处理程序<br>var myClickFunc = <span class="hljs-keyword">function</span>(evt)&#123;<br>    <span class="hljs-regexp">//</span> TODO ...<br>&#125;;<br><br><span class="hljs-regexp">//</span> 直接给DOM节点的 onclick 方法赋值，注意这里接收的是一个<span class="hljs-keyword">function</span><br>document.getElementById(<span class="hljs-string">&#x27;btn&#x27;</span>).onclick = myClickFunc;<br><br><span class="hljs-regexp">//</span> 移除事件处理程序<br>document.getElementById(<span class="hljs-string">&#x27;btn&#x27;</span>).onclick = null;<br></code></pre></td></tr></table></figure></p>
+<h2 id="DOM-2-级事件处理程序"><a href="#DOM-2-级事件处理程序" class="headerlink" title="DOM 2 级事件处理程序"></a>DOM 2 级事件处理程序</h2><p>通过事件监听的方式绑定事件，DOM2级事件定义了两个方法，用于处理指定和删除事件处理程序的操作。<br><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-comment">// event: 事件名称</span><br><span class="hljs-comment">// function: 事件函数</span><br><span class="hljs-comment">// boolean: false | true, true 为事件捕获, false 为事件冒泡(默认);</span><br><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Ele</span>.</span></span>add<span class="hljs-constructor">EventListener(<span class="hljs-params">event</span>,<span class="hljs-params">function</span>[,<span class="hljs-params">boolean</span>])</span>; <span class="hljs-comment">// 添加句柄</span><br><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">ELe</span>.</span></span>remove<span class="hljs-constructor">EventListener(<span class="hljs-params">event</span>,<span class="hljs-params">function</span>[,<span class="hljs-params">boolean</span>])</span>; <span class="hljs-comment">// 移除句柄</span><br>看个例子：<br><br><span class="hljs-comment">/* html */</span><br>&lt;button id=<span class="hljs-string">&quot;btn&quot;</span>&gt;ClickMe&lt;/button&gt;<br><br><span class="hljs-comment">/* js */</span><br><span class="hljs-comment">// 通过DOM操作进行动态绑定：</span><br><span class="hljs-comment">// 获取btnHello节点</span><br>var oBtn = document.get<span class="hljs-constructor">ElementById(&#x27;<span class="hljs-params">btn</span>&#x27;)</span>;<br> <br><span class="hljs-comment">// 增加第一个 click 事件监听处理程序</span><br>oBtn.add<span class="hljs-constructor">EventListener(&#x27;<span class="hljs-params">click</span>&#x27;,<span class="hljs-params">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    <span class="hljs-comment">// TODO sth 1...</span><br>&#125;);<br> <br><span class="hljs-comment">// 增加第二个 click 事件监听处理程序</span><br>oBtn.add<span class="hljs-constructor">EventListener(&#x27;<span class="hljs-params">click</span>&#x27;,<span class="hljs-params">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    <span class="hljs-comment">// TODO sth 2...</span><br>&#125;);<br><br><span class="hljs-comment">// ps：通过这种形式，可以给btn按钮绑定任意多个click监听；注意，执行顺序与添加顺序相关。</span><br><br><span class="hljs-comment">// 移除事件处理程序</span><br>oBtn.remove<span class="hljs-constructor">EventListener(&#x27;<span class="hljs-params">click</span>&#x27;,<span class="hljs-params">function</span>(<span class="hljs-params">evt</span>)</span>&#123;..&#125;);<br></code></pre></td></tr></table></figure></p>
+<h2 id="IE事件处理程序"><a href="#IE事件处理程序" class="headerlink" title="IE事件处理程序"></a>IE事件处理程序</h2><p>DOM 2级事件处理程序在IE是行不通的，IE有自己的事件处理程序方法：attachEvent()和detachEvent()。这两个方法的用法与addEventListener()是一样的，但是只接收两个参数，一个是事件名称，另一个是事件处理程序的函数。为什么不使用第三个参数的原因呢？因为IE8以及更早的浏览器版本只支持事件冒泡。看个例子：<br><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-comment">/* html */</span><br>&lt;button id=<span class="hljs-string">&quot;btn&quot;</span>&gt;ClickMe&lt;/button&gt;<br><br><span class="hljs-comment">/* js */</span><br>var oBtn = document.get<span class="hljs-constructor">ElementById(&#x27;<span class="hljs-params">btn</span>&#x27;)</span>;<br><span class="hljs-comment">// 事件处理函数</span><br><span class="hljs-keyword">function</span> evt<span class="hljs-constructor">Fn()</span>&#123; <br>    console.log(this);<br>&#125;<br><span class="hljs-comment">// 添加句柄</span><br>oBtn.attach<span class="hljs-constructor">Event(&#x27;<span class="hljs-params">onclick</span>&#x27;,<span class="hljs-params">evtFn</span>)</span>;<br><br><span class="hljs-comment">// 移除句柄</span><br>oBtn.detach<span class="hljs-constructor">Event(&#x27;<span class="hljs-params">onclick</span>&#x27;,<span class="hljs-params">evtFn</span>)</span>;<br></code></pre></td></tr></table></figure><br>简易的跨浏览器解决方法<br>如果我们既要支持IE的事件处理方法，又要支持 DOM 2级事件，那么就要封装一个跨浏览器的事件处理函数，如果支持 DOM 2级事件，就用addEventListener，否则就用attachEvent。例子如下：<br><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-comment">//跨浏览器事件处理程序</span><br>var eventUtil = &#123;<br>    <span class="hljs-comment">// 添加句柄</span><br>    addHandler: <span class="hljs-keyword">function</span>(element, <span class="hljs-keyword">type</span>, handler)&#123;<br>        <span class="hljs-keyword">if</span>(element.addEventListener)&#123;<br>            element.add<span class="hljs-constructor">EventListener(<span class="hljs-params">type</span>, <span class="hljs-params">handler</span>, <span class="hljs-params">false</span>)</span>;<br>        &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(element.attachEvent)&#123;<br>            element.attach<span class="hljs-constructor">Event(&#x27;<span class="hljs-params">on</span>&#x27; + <span class="hljs-params">type</span>, <span class="hljs-params">handler</span>)</span>;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            element<span class="hljs-literal">[&#x27;<span class="hljs-identifier">on</span>&#x27; + <span class="hljs-identifier">type</span>]</span> = handler;<br>        &#125;<br>    &#125;,<br>    <span class="hljs-comment">// 删除句柄</span><br>    removeHandler: <span class="hljs-keyword">function</span>(element, <span class="hljs-keyword">type</span>, handler)&#123;<br>        <span class="hljs-keyword">if</span>(element.removeEventListener)&#123;<br>            element.remove<span class="hljs-constructor">EventListener(<span class="hljs-params">type</span>, <span class="hljs-params">handler</span>, <span class="hljs-params">false</span>)</span>;<br>        &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(element.detachEvent)&#123;<br>            element.detach<span class="hljs-constructor">Event(&#x27;<span class="hljs-params">on</span>&#x27; + <span class="hljs-params">type</span>, <span class="hljs-params">handler</span>)</span>;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            element<span class="hljs-literal">[&#x27;<span class="hljs-identifier">on</span>&#x27; + <span class="hljs-identifier">type</span>]</span> = null;<br>        &#125;<br>    &#125;<br>&#125;;<br><br>var oBtn = document.get<span class="hljs-constructor">ElementById(&#x27;<span class="hljs-params">btn</span>&#x27;)</span>;<br><span class="hljs-keyword">function</span> evt<span class="hljs-constructor">Fn()</span>&#123;<br>    alert(&#x27;hello world&#x27;);<br>&#125;<br>eventUtil.add<span class="hljs-constructor">Handler(<span class="hljs-params">oBtn</span>, &#x27;<span class="hljs-params">click</span>&#x27;, <span class="hljs-params">evtFn</span>)</span>;<br>eventUtil.remove<span class="hljs-constructor">Handler(<span class="hljs-params">oBtn</span>, &#x27;<span class="hljs-params">click</span>&#x27;, <span class="hljs-params">evtFn</span>)</span>;<br></code></pre></td></tr></table></figure></p>
+<h1 id="事件冒泡和事件捕获"><a href="#事件冒泡和事件捕获" class="headerlink" title="事件冒泡和事件捕获"></a>事件冒泡和事件捕获</h1><p>在了解事件委托之前，要先了解下事件冒泡和事件捕获。</p>
+<p>早期的web开发，浏览器厂商很难回答一个哲学上的问题：当你在页面上的一个区域点击时，你真正感兴趣的是哪个元素。这个问题带来了交互的定义。在一个元素的界限内点击，显得有点含糊。毕竟，在一个元素上的点击同时也发生在另一个元素的界限内。例如单击一个按钮。你实际上点击了按钮区域、body元素的区域以及html元素的区域。</p>
+<p>伴随着这个问题，两种主流的浏览器Netscape和IE有不同的解决方案。Netscape定义了一种叫做事件捕获的处理方法，事件首先发生在DOM树的最高层对象(document)然后往最深层的元素传播。在图例中，事件捕获首先发生在document上，然后是html元素，body元素，最后是button元素。</p>
+<p>IE的处理方法正好相反。他们定义了一种叫事件冒泡的方法。事件冒泡认为事件促发的最深层元素首先接收事件。然后是它的父元素，依次向上，知道document对象最终接收到事件。尽管相对于html元素来说，document没有独立的视觉表现，他仍然是html元素的父元素并且事件能冒泡到document元素。所以图例中噢噢那个button元素先接收事件，然后是body、html最后是document。如下图：<br><img src="http://upload-images.jianshu.io/upload_images/112419-13b59e438dbb6c70.png" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<h2 id="事件冒泡"><a href="#事件冒泡" class="headerlink" title="事件冒泡"></a>事件冒泡</h2><p>简单点说，事件冒泡就是事件触发时，会从目标DOM元素向上传播，直到文档根节点，一般情况下，会是如下形式传播：</p>
+<p>targetDOM → parentNode → … → body → document → window</p>
+<p>如果希望一次事件触发能在整个DOM树上都得到响应，那么就需要用到事件冒泡的机制。看下面示例：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">/* html */</span><br>&lt;button id=<span class="hljs-string">&quot;btn&quot;</span>&gt;ClickMe&lt;/button&gt;<br><br><span class="hljs-comment">/* js */</span><br><span class="hljs-comment">// 给按钮增加click监听</span><br><span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;btn&#x27;</span>).addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    alert(<span class="hljs-string">&#x27;button clicked&#x27;</span>);<br>&#125;,<span class="hljs-literal">false</span>);<br> <br><span class="hljs-comment">// 给body增加click监听</span><br><span class="hljs-built_in">document</span>.body.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    alert(<span class="hljs-string">&#x27;body clicked&#x27;</span>);<br>&#125;,<span class="hljs-literal">false</span>);<br></code></pre></td></tr></table></figure><br>在这种情况下，点击按钮“ClickMe”后，其自身的click事件会被触发，同时，该事件将会继续向上传播， 所有的祖先节点都将得到事件的触发命令，并立即触发自己的click事件；所以如上代码，将会连续弹出两个alert.</p>
+<p>在有些时候，我们想让事件独立触发，所以我们必须阻止冒泡，用event的stopPropagation()方法。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;button id=<span class="hljs-string">&quot;btn&quot;</span>&gt;ClickMe&lt;/button&gt;<br><br><span class="hljs-comment">/* js */</span><br><span class="hljs-comment">// 给按钮增加click监听</span><br><span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;btn&#x27;</span>).addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    alert(<span class="hljs-string">&#x27;button clicked&#x27;</span>);<br>    evt.stopPropagation(); <span class="hljs-comment">//阻止事件冒泡</span><br>&#125;,<span class="hljs-literal">false</span>);<br> <br><span class="hljs-comment">// 给body增加click监听</span><br><span class="hljs-built_in">document</span>.body.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>)</span>&#123;<br>    alert(<span class="hljs-string">&#x27;body clicked&#x27;</span>);<br>&#125;,<span class="hljs-literal">false</span>);<br></code></pre></td></tr></table></figure><br>此时，点击按钮后，只会触发按钮本身的click事件，得到一个alert效果；该按钮的点击事件，不会向上传播，body节点就接收不到此次事件命令。</p>
+<p>需要注意的是：</p>
+<p>不是所有的事件都能冒泡，如：blur、focus、load、unload都不能<br>不同的浏览器，阻止冒泡的方式也不一样，在w3c标准中，通过event.stopPropagation()完成， 在IE中则是通过自身的event.cancelBubble=true来完成。</p>
+<h1 id="事件委托"><a href="#事件委托" class="headerlink" title="事件委托"></a>事件委托</h1><p>事件委托看起来挺难理解，但是举个生活的例子。比如，有三个同事预计会在周一收到快递。为签收快递，有两种办法：一是三个人在公司门口等快递；二是委托给前台MM代为签收。现实当中，我们大都采用委托的方案（公司也不会容忍那么多员工站在门口就为了等快递）。前台MM收到快递后，她会判断收件人是谁，然后按照收件人的要求签收，甚至代为付款。这种方案还有一个优势，那就是即使公司里来了新员工（不管多少），前台MM也会在收到寄给新员工的快递后核实并代为签收。举个例子</p>
+<p>HTML结构：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;ul-item&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item1<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item2<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item3<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>item4<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span><br></code></pre></td></tr></table></figure><br>如果我们要点击li标签，弹出里面的内容，我们就需要为每个li标签绑定事件。<br><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scheme">(<span class="hljs-name">function</span>()&#123;<br>    var oUlItem = document.getElementById(<span class="hljs-symbol">&#x27;ul-item</span>&#x27;)<span class="hljs-comment">;</span><br>    var oLi = oUlItem.getElementsByTagName(<span class="hljs-symbol">&#x27;li</span>&#x27;)<span class="hljs-comment">;</span><br>    for(<span class="hljs-name">var</span> i=0, l = oLi.length<span class="hljs-comment">; i &lt; l; i++)&#123;</span><br>        oLi[<span class="hljs-name">i</span>].addEventListener(<span class="hljs-symbol">&#x27;click</span>&#x27;,show)<span class="hljs-comment">;</span><br>    &#125;<span class="hljs-comment">;</span><br>    function show(<span class="hljs-name">e</span>)&#123;<br>        e = e || window.event<span class="hljs-comment">;</span><br>        alert(<span class="hljs-name">e.target.innerHTML</span>)<span class="hljs-comment">;</span><br>    &#125;<span class="hljs-comment">;</span><br>&#125;)()<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure><br>虽然这样子能够实现我们想要的功能，但是如果这个UL中的LI子元素频繁的添加或删除，我们就需要在每次添加LI的时候为它绑定事件。这就添加了复杂度，并且造成内存开销较大。</p>
+<p>更简单的方法是利用事件委托，当事件被掏到更上层的父节点的时候，通过检查事件的目标对象（target）来判断并获取事件源LI。<br><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scheme">(<span class="hljs-name">function</span>()&#123;<br>    var oUlItem = document.getElementById(<span class="hljs-symbol">&#x27;ul-item</span>&#x27;)<span class="hljs-comment">;</span><br>    oUlItem.addEventListener(<span class="hljs-symbol">&#x27;click</span>&#x27;,show)<span class="hljs-comment">;</span><br>    function show(<span class="hljs-name">e</span>)&#123;<br>        e = e || window.event<span class="hljs-comment">;</span><br>        var src = e.target<span class="hljs-comment">;</span><br>        if(<span class="hljs-name">src</span> &amp;&amp; src.nodeName.toLowerCase() === <span class="hljs-symbol">&#x27;li</span>&#x27;)&#123;<br>            alert(<span class="hljs-name">src.innerHTML</span>)<span class="hljs-comment">;</span><br>        &#125;<br>    &#125;<br>&#125;)()<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure><br>这里我们为父节点UL添加了点击事件，当点击子节点LI标签的时候，点击事件会冒泡到父节点。父节点捕获到事件之后，通过判断e.target.nodeName来判断是否为我们需要处理的节点，并且通过e.target拿到了被点击的Li节点。从而可以获取到相应的信息，并做处理。</p>
+<p>优点：</p>
+<p>通过上面的介绍，大家应该能够体会到使用事件委托对于web应用程序带来的几个优点：</p>
+<p>管理的函数变少了。不需要为每个元素都添加监听函数。对于同一个父节点下面类似的子元素，可以通过委托给父元素的监听函数来处理事件。<br>可以方便地动态添加和修改元素，不需要因为元素的改动而修改事件绑定。<br>JavaScript和DOM节点之间的关联变少了，这样也就减少了因循环引用而带来的内存泄漏发生的概率。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BA%8B%E4%BB%B6-JavaScript/">事件 JavaScript</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/07/03/%E4%B8%BANexT%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB%E9%87%8F%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">为NexT主题添加文章阅读量统计功能</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/29/CentOS%E8%AE%BE%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E7%9A%84%E6%96%B9%E6%B3%95/">
+                        <span class="hidden-mobile">CentOS设置服务开机启动的方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="SOHUCS" sid='https://storyflow.github.io/2017/07/03/%E8%BD%AC-%E7%90%86%E8%A7%A3Javascript%E4%B8%AD%E7%9A%84%E4%BA%8B%E4%BB%B6%E7%BB%91%E5%AE%9A%E4%B8%8E%E4%BA%8B%E4%BB%B6%E5%A7%94%E6%89%98/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      var appid = 'cytCd1mt3';
+      var conf = '1d61dd8b796b9d212a6fae1b83a51843';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+        window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+      } else {
+        Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+          window.changyan.api.config({"appid":"cytCd1mt3","appkey":"1d61dd8b796b9d212a6fae1b83a51843"})
+        });
+      }
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

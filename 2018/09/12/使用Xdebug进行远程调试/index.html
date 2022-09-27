@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="null">
+  <meta name="author" content="怦然心动">
+  <meta name="keywords" content="undefined">
+  
+  <title>使用Xdebug进行远程调试 - 怦然心动</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"storyflow.github.io","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>怦然心动</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="使用Xdebug进行远程调试">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-09-12 18:52" pubdate>
+        2018年9月12日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      871 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      10
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用Xdebug进行远程调试</h1>
+            
+            <div class="markdown-body">
+              <h2 id="为什么要用？"><a href="#为什么要用？" class="headerlink" title="为什么要用？"></a>为什么要用？</h2><ol>
+<li>方便联调：<br> 和客户端一起联调，是die(); exit(); 会影响其他人员是使用。</li>
+<li>关注数据变化：<br> 正常情况下，我们在调试和开发时，更关注数据的变化。频繁断点、效率比较低。</li>
+<li>简单：<br> 之前的开发自己比较懒，一直没用，用起来发现很简单。<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2>运行xdebug需要客户端IDE（phpstorm）、远程服务器配合，首先是客户端配置好端口，发送debug请求，请求会通过浏览器或者IDE的http请求，携带特定的参数发送到服务端，服务端收到请求后，发现这是一个xdebug请求，则与IDE建立dpgp连接，当遇到断点时候，返回调试信息给IDE</li>
+</ol>
+<p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/dbgp-setup2.gif" srcset="/img/loading.gif" lazyload alt="image | left"></p>
+<ul>
+<li>服务器的IP是10.0.1.2，端口80上有HTTP</li>
+<li>IDE位于未知IP上，因此<a target="_blank" rel="noopener" href="https://xdebug.org/docs/all_settings#remote_connect_back">xdebug.remote_connect_back</a>设置为1</li>
+<li>IDE侦听端口9000，因此<a target="_blank" rel="noopener" href="https://xdebug.org/docs/all_settings#remote_port">xdebug.remote_port</a>设置为9000</li>
+<li>发出HTTP请求，Xdebug从HTTP头中检测IP地址</li>
+<li>Xdebug连接到端口9000上检测到的IP（10.0.1.42）</li>
+<li>调试运行，提供HTTP响应</li>
+</ul>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536630028850-6b8b1d43-596f-41b0-8f3c-4fca581ed938.png" srcset="/img/loading.gif" lazyload alt="7c8bad15595a7ed97230e075124cb9ff.png | center | 827x436"></p>
+<h3 id="1-安装xdebug扩展"><a href="#1-安装xdebug扩展" class="headerlink" title="1. 安装xdebug扩展"></a>1. 安装xdebug扩展</h3><p><a target="_blank" rel="noopener" href="https://xdebug.org/download.php">https://xdebug.org/download.php</a></p>
+<h3 id="2-远程环境配置"><a href="#2-远程环境配置" class="headerlink" title="2. 远程环境配置"></a>2. 远程环境配置</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs stylus">zend_extension=xdebug<span class="hljs-selector-class">.so</span><br>xdebug.idekey=PHPSTORM<br>xdebug<span class="hljs-selector-class">.remote_connect_back</span> = <span class="hljs-number">1</span><br><span class="hljs-comment">//如果开启此，将忽略下面的 xdebug.remote_host 的参数</span><br><br>xdebug.remote_host=<span class="hljs-number">192.168</span><span class="hljs-selector-class">.x</span><span class="hljs-selector-class">.x</span><br><span class="hljs-comment">//注意这里是，客户端的ip&lt;即IDE的机器的ip,不是你的web server&gt;</span><br><br>xdebug.remote_enable=on<br>xdebug<span class="hljs-selector-class">.remote_port</span> = <span class="hljs-number">9001</span><br><span class="hljs-comment">//注意这里是，客户端的端口&lt;即IDE的机器的ip,不是你的web server&gt;</span><br><br>xdebug<span class="hljs-selector-class">.remote_handler</span> = dbgp<br>xdebug<span class="hljs-selector-class">.auto_trace</span> = <span class="hljs-number">1</span><br>xdebug<span class="hljs-selector-class">.remote_log</span> = /tmp/xdebug.log<br></code></pre></td></tr></table></figure>
+<h3 id="3-配置deployment"><a href="#3-配置deployment" class="headerlink" title="3. 配置deployment"></a>3. 配置deployment</h3><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536630853918-79a6fc79-8219-4065-9fcb-ed54408f97b8.jpeg" srcset="/img/loading.gif" lazyload alt="v2-169647ab9bc2bf755f572ef4b0ff4116_hd.jpg | center | 720x641"></p>
+<h3 id="4-Phpstorm-Debug配置"><a href="#4-Phpstorm-Debug配置" class="headerlink" title="4. Phpstorm Debug配置"></a>4. Phpstorm Debug配置</h3><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536630313482-89d021c9-e4c2-47db-b321-dce8a8e450d8.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_153663027822.png | center | 827x571"></p>
+<h3 id="5-开启phpstorm-数据监听"><a href="#5-开启phpstorm-数据监听" class="headerlink" title="5. 开启phpstorm 数据监听"></a>5. 开启phpstorm 数据监听</h3><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536630767918-66fe3bd7-36da-41c0-aefc-2139a35269ec.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15366307559249.png | center | 446x79"></p>
+<h3 id="6-设置-debug-session"><a href="#6-设置-debug-session" class="headerlink" title="6. 设置 debug session"></a>6. 设置 debug session</h3><p>debug session 的工具的目的是设置一个cookie, 让每次发送数据的时候都会携带这个 cookie, 从而识别监听.</p>
+<p>6.1) 安装工具<br><a target="_blank" rel="noopener" href="https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc">https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc</a></p>
+<p>6.2) 点击图标设置</p>
+<p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536631091957-8c6806b0-29ec-4aeb-8f50-687a51d3ad1b.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15366310693718.png | center | 202x226"></p>
+<p>6.3） 已经设置了cookie, Key 是 <code>XDEBUG_SESSION</code>, 值是 <code>PHPSTORM</code></p>
+<p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536631205993-bd06e1ff-f9c7-4d1e-8edd-b0cc1592775b.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_153663027822.png | center | 824x446"></p>
+<h3 id="7-运行页面"><a href="#7-运行页面" class="headerlink" title="7. 运行页面"></a>7. 运行页面</h3><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536631295449-4fe998cf-8812-402b-980f-790e90df4c87.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15365753413668.png | center | 622x234"></p>
+<h2 id="其他调试方式"><a href="#其他调试方式" class="headerlink" title="其他调试方式"></a>其他调试方式</h2><p>上面的模式有个缺点，插件是针对于一个标签页<br>快捷键：<br>Mac: Ctrl+Shift+X Windows:Alt+Shift+X</p>
+<h3 id="内部模式"><a href="#内部模式" class="headerlink" title="内部模式"></a>内部模式</h3><h4 id="1-设置-web-访问的服务器"><a href="#1-设置-web-访问的服务器" class="headerlink" title="1. 设置 web 访问的服务器"></a><strong>1. 设置 web 访问的服务器</strong></h4><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536632468788-c06b4fd9-c68a-4210-99a9-731b892bb497.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15366324012641.png | center | 827x571"></p>
+<h4 id="2-配置调试页面"><a href="#2-配置调试页面" class="headerlink" title="2. 配置调试页面"></a>2. 配置调试页面</h4><p>我们这里创建的调试页面的类型是<code>PHP Web Page</code>, 服务器选择的是刚才已经建立好的服务器</p>
+<p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536632586232-8de4ff11-7bea-4595-b0ff-d95a0ffa8d7d.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15366324012641.png | center | 827x554"></p>
+<h4 id="3-运行测试页面"><a href="#3-运行测试页面" class="headerlink" title="3. 运行测试页面"></a>3. 运行测试页面</h4><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536632899220-90af138c-2aa7-47d2-a3f9-9167f76b37c8.png" srcset="/img/loading.gif" lazyload alt="企业微信截图_15366324012641.png | center | 287x97"></p>
+<p>自动生成：XDEBUG_SESSION_START<br><a target="_blank" rel="noopener" href="http://example.com/?XDEBUG_SESSION_START=13608">http://example.com/?XDEBUG_SESSION_START=13608</a></p>
+<h3 id="Fiddler工具调试"><a href="#Fiddler工具调试" class="headerlink" title="Fiddler工具调试"></a>Fiddler工具调试</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plain">if (oSession.host == &quot;xxxx&quot;)<br>&#123;<br>	var sCookie = oSession.oRequest[&quot;Cookie&quot;] + &#x27;;XDEBUG_SESSION=PHPSTORM;&#x27;;<br>	oSession.oRequest.headers.Add(&quot;Cookie&quot;, sCookie);		<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plain">export XDEBUG_CONFIG=&quot;idekey=PHPSTORM&quot;<br>php myscript.php<br></code></pre></td></tr></table></figure>
+<h3 id="多人开发模式"><a href="#多人开发模式" class="headerlink" title="多人开发模式"></a>多人开发模式</h3><p><a target="_blank" rel="noopener" href="https://derickrethans.nl/debugging-with-multiple-users.html">https://derickrethans.nl/debugging-with-multiple-users.html</a><br>插件下载地址：<a target="_blank" rel="noopener" href="http://code.activestate.com/komodo/remotedebugging/">http://code.activestate.com/komodo/remotedebugging/</a></p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="1-查看兼容性"><a href="#1-查看兼容性" class="headerlink" title="1. 查看兼容性"></a>1. 查看兼容性</h3><p>第一次运行的时候可以通过 phpstorm 自带的工具来检查配置的兼容性.<br><code>Run &gt; Web Server Debug Validation</code><br>校验代码<br>：<a target="_blank" rel="noopener" href="https://gist.github.com/han8gui/231ba75c8989ffe6dfab3831c0dcd58a">https://gist.github.com/han8gui/231ba75c8989ffe6dfab3831c0dcd58a</a></p>
+<h3 id="2-debug-帮助面板说明"><a href="#2-debug-帮助面板说明" class="headerlink" title="2. debug 帮助面板说明"></a>2. debug 帮助面板说明</h3><p><img src="/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/1536633142576-1e57ddb6-6068-468c-a778-cf6f901e6bea.png" srcset="/img/loading.gif" lazyload alt="2cd9bf236c0d2ef6f143943fe82c240a.png | center | 827x201"></p>
+<p><strong>左侧</strong><br>绿色三角形 ： <code>Resume Program</code>，表示將继续执行，直到下一个中断点停止。<br>红色方形 ： <code>Stop</code>，表示中断当前程序调试。</p>
+<p><strong>上方</strong><br>第一个图形示 ： <code>Step Over</code>，跳过当前函数。<br>第二个图形示 ： <code>Step Into</code>，进入当前函数內部的程序（相当于观察程序一步一步执行）。<br>第三个图形示 ： <code>Force Step Into</code>，強制进入当前函数內部的程序。<br>第四个图形示 ： <code>Step Out</code>，跳出当前函数內部的程式。<br>第五个图形示 ： <code>Run to Cursor</code>，定位到当前光标。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000011387666">https://segmentfault.com/a/1190000011387666</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08/12/%E9%9F%AD%E8%8F%9C%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">韭菜的自我修养</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/05/15/vue%E5%85%A5%E9%97%A8/">
+                        <span class="hidden-mobile">vue入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="SOHUCS" sid='https://storyflow.github.io/2018/09/12/%E4%BD%BF%E7%94%A8Xdebug%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      var appid = 'cytCd1mt3';
+      var conf = '1d61dd8b796b9d212a6fae1b83a51843';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+        window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+      } else {
+        Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+          window.changyan.api.config({"appid":"cytCd1mt3","appkey":"1d61dd8b796b9d212a6fae1b83a51843"})
+        });
+      }
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

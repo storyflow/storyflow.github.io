@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="null">
+  <meta name="author" content="怦然心动">
+  <meta name="keywords" content="undefined">
+  
+  <title>定时任务 Crontab命令 详解 - 怦然心动</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"storyflow.github.io","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>怦然心动</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="定时任务 Crontab命令 详解">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2017-01-05 11:02" pubdate>
+        2017年1月5日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      54
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">定时任务 Crontab命令 详解</h1>
+            
+            <div class="markdown-body">
+              <p>From: <a target="_blank" rel="noopener" href="http://www.centoscn.com/CentOS/help/2014/1030/4025.html">http://www.centoscn.com/CentOS/help/2014/1030/4025.html</a></p>
+<p><strong>前言</strong><br>crontab是Unix和Linux用于设置周期性被执行的指令，是互联网很常用的技术，很多任务都会设置在crontab循环执行，如果不使用crontab，那么任务就是常驻程序，这对你的程序要求比较高，一个要求你的程序是24X7小时不宕机，一个是 要求你的调度程序比较可靠，实际工作中，90%的程序都没有必要花这么多时间和精力去解决上面的两个问题的，只需要写好自己的业务逻辑，通过crond这 个工业级程序去调度就行了，crond的可靠性，健壮性，大家应该是毫无疑问的。</p>
+<p><strong>crontab简易入门</strong><br>假设我要设置一个任务，每分钟就要做一个数据同步，这个同步脚本的路径是/home/blue/do/rsyncfile.sh，那么我可以在这么配置，使用blue用户，在终端输入</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk">crontab -e<br><br><span class="hljs-comment"># 此时会进入 vi 的编辑画面让您编辑工作！注意到，每项工作都是一行。</span><br><br><span class="hljs-comment">#分 时 日  月 周      |&lt;==============任务的完整命令行</span><br><br> *  *  *  *  *       <span class="hljs-regexp">/home/</span>blue<span class="hljs-regexp">/do/</span>rsyncfile.sh<br></code></pre></td></tr></table></figure>
+<p>默认情况下，任何使用者只要不被列入 /etc/cron.deny 当中，那么他就可以直接下达『 crontab -e 』去编辑自己的例行性命令了！整个过程就如同上面提到的，会进入 vi 的编辑画面， 然后以一个工作一行来编辑，编辑完毕之后输入『 :wq 』储存后离开 vi 就可以了！<br> 假如我们需要修改为每5分钟运行数据同步的脚本，那么同样使用 crontab -e 进入编辑：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">*<span class="hljs-regexp">/5 * * * *  /</span>home<span class="hljs-regexp">/blue/</span><span class="hljs-keyword">do</span>/rsyncfile.sh<br></code></pre></td></tr></table></figure>
+<p>假如服务器出了问题，有一天的数据没有同步，于是我们就需要补数据了，假设这个补数据的脚本是/home/blue/do /rsyncfile_day.sh,但是白天是高峰期，晚上用户不多，是低峰期，我们补数据会占用大量带宽，尤其是白天，会影响正常业务，所以一般我们 可以让补数据任务在凌晨2点开始跑，那么同样使用crontab -e 进入编辑：<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span><span class="hljs-number">2</span> <span class="hljs-number">1</span> <span class="hljs-number">4</span> *  /home/blue/do/rsyncfile_day.sh<br></code></pre></td></tr></table></figure><br>这样，在4月1号凌晨2点0分就会开始启动我们的补数据的脚本了。<br>同步数据，在互联网公司是再平常不过的任务了，这里大家可以看到crontab的魅力所在了，只需要写最简单的业务逻辑，把调度交给crond做，就完成了一个可靠性很高的一项任务了，如果要自己去额外写这种调度程序，不知道要花多少精力才能做到可靠稳定。</p>
+<p><strong>crontab的语法</strong><br><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs diff">crontab [-u username] [-l|-e|-r]<br>选项与参数：<br><span class="hljs-deletion">-u  ：只有 root 才能进行这个任务，亦即帮其他使用者创建/移除 crontab 工作排程；</span><br><span class="hljs-deletion">-e  ：编辑 crontab 的工作内容</span><br><span class="hljs-deletion">-l  ：查阅 crontab 的工作内容</span><br><span class="hljs-deletion">-r  ：移除所有的 crontab 的工作内容，若仅要移除一项，请用 -e 去编辑</span><br></code></pre></td></tr></table></figure><br>查询使用者目前的 crontab 内容:<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">crontab -l<br>*<span class="hljs-regexp">/5 * * * *  /</span>home<span class="hljs-regexp">/blue/</span><span class="hljs-keyword">do</span>/rsyncfile.sh<br><span class="hljs-number">0</span> <span class="hljs-number">2</span> <span class="hljs-number">1</span> <span class="hljs-number">4</span> *  <span class="hljs-regexp">/home/</span>blue<span class="hljs-regexp">/do/</span>rsyncfile_day.sh<br></code></pre></td></tr></table></figure><br>清空使用者目前的 crontab:<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">crontab</span> -r<br>crontab -l<br><span class="hljs-literal">no</span> crontab for blue<br></code></pre></td></tr></table></figure><br>如果你想删除当前用户的某一个crontab任务，那么使用crontab -e进入编辑器，再删除对应的任务。</p>
+<p><strong>crontab的限制</strong><br>/etc/cron.allow：将可以使用 crontab 的帐号写入其中，若不在这个文件内的使用者则不可使用 crontab；<br>/etc/cron.deny：将不可以使用 crontab 的帐号写入其中，若未记录到这个文件当中的使用者，就可以使用 crontab 。<br>以优先顺序来说， /etc/cron.allow 比 /etc/cron.deny 要优先， 而判断上面，这两个文件只选择一个来限制而已，因此，建议你只要保留一个即可， 免得影响自己在配置上面的判断！一般来说，系统默认是保留 /etc/cron.deny ，你可以将不想让他运行 crontab 的那个使用者写入 /etc/cron.deny 当中，一个帐号一行！</p>
+<p><strong>/etc/crontab配置文件讲解</strong><br>『 crontab -e 』是针对使用者的 cron 来设计的，如果是『系统的例行性任务』时，就要编辑 /etc/crontab 这个文件。<br>那就是 crontab -e 这个 crontab 其实是 /usr/bin/crontab 这个运行档，但是 /etc/crontab 可是一个『纯文字档』,必须用 root 的身份编辑一下这个文件。<br>首先我们要来看看crontab的文件内容<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">cat <span class="hljs-regexp">/etc/</span>crontab<br></code></pre></td></tr></table></figure><br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment"># /etc/crontab: system-wide crontab</span><br><span class="hljs-comment"># Unlike any other crontab you don&#x27;t have to run the `crontab&#x27;</span><br><span class="hljs-comment"># command to install the new version when you edit this file</span><br><span class="hljs-comment"># and files in /etc/cron.d. These files also have username fields,</span><br><span class="hljs-comment"># that none of the other crontabs do.</span><br> <br>SHELL=<span class="hljs-regexp">/bin/</span>sh<br><br>PATH=<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/sbin:/u</span>sr<span class="hljs-regexp">/local/</span>bin:<span class="hljs-regexp">/sbin:/</span>bin:<span class="hljs-regexp">/usr/</span>sbin:<span class="hljs-regexp">/usr/</span>bin<br> <br><span class="hljs-comment"># m h dom mon dow user  command</span><br><br><span class="hljs-number">17</span> *    * * *   root    cd <span class="hljs-regexp">/ &amp;&amp; run-parts --report /</span>etc/cron.hourly<br><br><span class="hljs-number">25</span> <span class="hljs-number">6</span>    * * *   root    test -x <span class="hljs-regexp">/usr/</span>sbin<span class="hljs-regexp">/anacron || ( cd /</span> &amp;&amp; run-parts --report <span class="hljs-regexp">/etc/</span>cron.daily )<br><br><span class="hljs-number">47</span> <span class="hljs-number">6</span>    * * <span class="hljs-number">7</span>   root    test -x <span class="hljs-regexp">/usr/</span>sbin<span class="hljs-regexp">/anacron || ( cd /</span> &amp;&amp; run-parts --report <span class="hljs-regexp">/etc/</span>cron.weekly )<br><br><span class="hljs-number">52</span> <span class="hljs-number">6</span>    <span class="hljs-number">1</span> * *   root    test -x <span class="hljs-regexp">/usr/</span>sbin<span class="hljs-regexp">/anacron || ( cd /</span> &amp;&amp; run-parts --report <span class="hljs-regexp">/etc/</span>cron.monthly )<br></code></pre></td></tr></table></figure><br>这个文件与将刚刚我们下达 crontab -e 的内容几乎完全一模一样！只是有几个地方不太相同<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">PATH</span>=....：<br></code></pre></td></tr></table></figure><br>这里就是输入运行档的搜寻路径！使用默认的路径配置就已经很足够了！<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">17 </span>* * * *   root    cd / &amp;&amp; <span class="hljs-keyword">run</span>-parts --report /etc/cron.hourly：<br></code></pre></td></tr></table></figure><br>这个 /etc/crontab 里面预配置义出四项工作任务，分别是每小时、每天、每周及每个月分别进行一次的工作！ 但是在五个栏位后面接的并不是命令，而是一个新的栏位，那就是『运行后面那串命令的身份』为何！这与使用者的 crontab -e 不相同。由於使用者自己的 crontab 并不需要指定身份，但 /etc/crontab 里面当然要指定身份啦！以上表的内容来说，系统默认的例行性工作是以 root 的身份来进行的。<br>那么后面那串命令是什么呢？你可以使用『 which run-parts 』搜寻看看，其实那是一个 bash script 啦！如果你直接进入 /usr/bin/run-parts 去看看， 会发现这支命令会将后面接的『目录』内的所有文件捉出来运行！这也就是说『 如果你想让系统每小时主动帮你运行某个命令，将该命令写成 script，并将该文件放置到 /etc/cron.hourly/ 目录下即可』的意思！<br>现在你知道系统是如何进行他默认的一堆例行性工作排程了吗？如果你下达『 ll /etc/cron.daily 』就可以看到一堆文件， 那些文件就是系统提供的 script ，而这堆 scripts 将会在每天的凌晨 6:25 开始运行！<br>假设你现在要作一个目录，让系统可以每 2 分钟去运行这个目录下的所有可以运行的文件，你可以写下如下的这一行在 /etc/crontab 中：<br><figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arcade">*<span class="hljs-regexp">/2 * * * * root run-parts /</span>etc/cron.min<br></code></pre></td></tr></table></figure><br>当然罗， /etc/cron.min 这个目录是需要存在的喔！那如果我需要运行的是一个『程序』而已， 不需要用到一个目录呢？该如何是好？例如在侦测网络流量时，我们希望每五分钟侦测分析一次， 可以这样写：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">*<span class="hljs-regexp">/5 * * * * root /</span>bin<span class="hljs-regexp">/mrtg /</span>etc<span class="hljs-regexp">/mrtg/m</span>rtg.cfg<br></code></pre></td></tr></table></figure><br>如何！创建例行性命令很简单吧！如果你是系统管理员而且你的工作又是系统维护方面的例行任务时， 直接修改 /etc/crontab 这个文件即可喔！又便利，又方便管理呢！</p>
+<p><strong>crontab的原理</strong><br>当使用者使用 crontab 这个命令来创建工作排程之后，该项工作就会被纪录到 /var/spool/cron/ 里面去了，而且是以帐号来作为判别的喔！举例来说， blue 使用 crontab 后， 他的工作会被纪录到 /var/spool/cron/blue 里头去！但请注意，不要使用 vi 直接编辑该文件， 因为可能由于输入语法错误，会导致无法运行 cron 喔！另外， cron 运行的每一项工作都会被纪录到 /var/log/cron 这个登录档中，所以罗，如果你的 Linux 不知道有否被植入木马时，也可以搜寻一下 /var/log/cron 这个登录档呢！<br> crond服务的最低侦测限制是『分钟』，所以『 cron 会每分钟去读取一次 /etc/crontab 与 /var/spool/cron 里面的数据内容 』，因此，只要你编辑完 /etc/crontab 这个文件，并且将他储存之后，那么 cron 的配置就自动的会来运行了！<br>备注：在 Linux 底下的 crontab 会自动的帮我们每分钟重新读取一次 /etc/crontab 的例行工作事项，但是某些原因或者是其他的 Unix 系统中，由于 crontab 是读到内存当中的，所以在你修改完 /etc/crontab 之后，可能并不会马上运行， 这个时候请重新启动 crond 这个服务吧！『/etc/init.d/crond restart』 或 『service crond restart』</p>
+<p><strong>crontab的格式讲解</strong><br>每项工作 (每行) 的格式都是具有六个栏位，这六个栏位的意义为：<br>| 代表意义| 分钟    |小时    |日期（天）    |月份|    周|    命令|<br>| ————- |:————-:| —–:|—–:|—–:|—–:|<br>| 数字范围 |0-59|    0-23|    1-31    |1-12    |0-7    |呀就命令啊|</p>
+<p>比较有趣的是那个『周』喔！周的数字为 0 或 7 时，都代表『星期天』的意思！另外， 还有一些辅助的字符，大概有底下这些：<br>| 特殊字符 | 代表意义|<br>| ————- |:————-:|<br>|<em>(星号)    |代表任何时刻都接受的意思！举例来说，范例一内那个日、月、周都是 </em> ， 就代表著『不论何月、何日的礼拜几的 12:00 都运行后续命令』的意思！<br>|,(逗号)    |代表分隔时段的意思。举例来说，如果要下达的工作是 3:00 与 6:00 时，就会是：0 3,6 <em> </em> <em> command 时间参数还是有五栏，不过第二栏是 3,6 ，代表 3 与 6 都适用！ |<br>|-(减号)    |代表一段时间范围内，举例来说， 8 点到 12 点之间的每小时的 20 分都进行一项工作：20 8-12 </em> <em> </em> command 仔细看到第二栏变成 8-12 喔！代表 8,9,10,11,12 都适用的意思！|<br>|/n(斜线)|那个 n 代表数字，亦即是『每隔 n 单位间隔』的意思，例如每五分钟进行一次，则：<em>/5 </em> <em> </em> <em> command很简单吧！用 </em> 与 /5 来搭配，也可以写成 0-59/5 ，相同意思！|</p>
+<p><strong>周与日月</strong><br>周和日月不是 并 的关系，而是 或 的关系。<br>另一个需要注意的地方在於：『你可以分别以周或者是日月为单位作为循环，但你不可使用「几月几号且为星期几」的模式工作』。 这个意思是说，你不可以这样编写一个工作排程：<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">12</span> <span class="hljs-number">11</span> <span class="hljs-number">9</span> <span class="hljs-number">5</span> root echo <span class="hljs-string">&quot;just test&quot;</span>   &lt;==这是错误的写法<br></code></pre></td></tr></table></figure><br>本来你以为九月十一号且为星期五才会进行这项工作，无奈的是，系统可能会判定每个星期五作一次，或每年的 9 月 11 号分别进行，如此一来与你当初的规划就不一样了～所以罗，得要注意这个地方！上述的写法是不对的！</p>
+<p><strong>CentOS下查看crontab执行历史记录</strong><br>在crontab中添加了定时任务，但发现没有得到期望的结果，因而怀疑是crontab没有执行相应的任务，但怎么定位crontab是否执行呢？<br>这就需要查看crontab的执行历史记录，具体位置如下：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> /<span class="hljs-keyword">var</span>/<span class="hljs-keyword">log</span><br>tail -100 cron<br></code></pre></td></tr></table></figure><br>在cron文件中即可查阅已经操作过的相关定时任务。</p>
+<p>参考资料:<br><a target="_blank" rel="noopener" href="http://vbird.dic.ksu.edu.tw/linux_basic/0430cron_3.php">http://vbird.dic.ksu.edu.tw/linux_basic/0430cron_3.php</a><br><a target="_blank" rel="noopener" href="http://baike.baidu.com/view/1229061.htm">http://baike.baidu.com/view/1229061.htm</a> </p>
+<p><strong>一、Crontab 格式说明</strong><br>我们可以用 crontab -e 添加要执行的命令。 命令执行的结果，无论是标准输出还是错误输出，都将以邮件形式发给用户。<br>添加的命令必须以如下格式：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-bullet">*</span> <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">* *</span> /command path<br></code></pre></td></tr></table></figure>
+<p>前五个字段可以取整数值，指定何时开始工作，第六个域是字符串，即命令字段，其中包括了crontab调度执行的命令。 各个字段之间用spaces和tabs分割。</p>
+<p>前5个字段分别表示：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs subunit">分钟：0<span class="hljs-string">-59</span><br>小时：1<span class="hljs-string">-23</span><br>日期：1<span class="hljs-string">-31</span><br>月份：1<span class="hljs-string">-12</span><br>星期：0<span class="hljs-string">-6</span>（0表示周日）<br></code></pre></td></tr></table></figure>
+<p>还可以用一些特殊符号：<br><figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arcade">*： 表示任何时刻<br>,： 表示分割<br>－：表示一个段，如第二端里： <span class="hljs-number">1</span><span class="hljs-number">-5</span>，就表示<span class="hljs-number">1</span>到<span class="hljs-number">5</span>点<br>/n : 表示每个n的单位执行一次，如第二段里，*<span class="hljs-regexp">/1, 就表示每隔1个小时执行一次命令。也可以写成1-23/</span><span class="hljs-number">1.</span> <br></code></pre></td></tr></table></figure><br>一些示例：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">00 </span><span class="hljs-number">8</span>,<span class="hljs-number">12</span>,<span class="hljs-number">16</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/monitor/df.sh<br><span class="hljs-symbol">30 </span><span class="hljs-number">2</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/hotbackup/hot_database_backup.sh<br><span class="hljs-symbol">10 </span><span class="hljs-number">8</span>,<span class="hljs-number">12</span>,<span class="hljs-number">16</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/monitor/check_ind_unusable.sh<br><span class="hljs-symbol">10 </span><span class="hljs-number">8</span>,<span class="hljs-number">12</span>,<span class="hljs-number">16</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/monitor/check_maxfilesize.sh<br><span class="hljs-symbol">10 </span><span class="hljs-number">8</span>,<span class="hljs-number">12</span>,<span class="hljs-number">16</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/monitor/check_objectsize.sh<br></code></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs markdown">43 21 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">*              21:43 执行</span><br><span class="hljs-emphasis">15 05 *</span> <span class="hljs-emphasis">* *</span>              05:15 执行<br>0 17 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">*               17:00 执行</span><br><span class="hljs-emphasis">0 17 *</span> <span class="hljs-emphasis">* 1               每周一的 17:00 执行</span><br><span class="hljs-emphasis">0,10 17 *</span> <span class="hljs-emphasis">* 0,2,3        每周日,周二,周三的 17:00和 17:10 执行</span><br><span class="hljs-emphasis">0-10 17 1 *</span> <span class="hljs-emphasis">*            毎月1日从 17:00到7:10 毎隔1分钟 执行</span><br><span class="hljs-emphasis">0 0 1,15 *</span> 1             毎月1日和 15日和 一日的 0:00 执行<br>42 4 1 <span class="hljs-emphasis">* *</span>               毎月1日的 4:42分 执行<br>0 21 <span class="hljs-emphasis">* *</span> 1-6             周一到周六 21:00 执行<br>0,10,20,30,40,50 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">* *</span>  每隔10分 执行<br><span class="hljs-emphasis">*/10 *</span> <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">*              每隔10分 执行</span><br><span class="hljs-emphasis">*</span> 1 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">*                 从1:0到1:59 每隔1分钟 执行</span><br><span class="hljs-emphasis">0 1 *</span> <span class="hljs-emphasis">* *</span>                 1:00 执行<br>0 <span class="hljs-emphasis">*/1 *</span> <span class="hljs-emphasis">* *</span>               毎时0分 每隔1小时 执行<br>0 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">* *</span>                 毎时0分 每隔1小时 执行<br>2 8-20/3 <span class="hljs-emphasis">* *</span> <span class="hljs-emphasis">*            8:02,11:02,14:02,17:02,20:02 执行</span><br><span class="hljs-emphasis">30 5 1,15 *</span> <span class="hljs-emphasis">*             1日 和 15日的 5:30 执行</span><br></code></pre></td></tr></table></figure>
+<p><strong>二、&amp; 后台执行命令</strong><br>当在前台运行某个作业时，终端被该作业占据；而在后台运行作业时，它不会占据终端。可以使用&amp;命令把作业放到后台执行。<br>如：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">2</span> * * * /<span class="hljs-keyword">data</span>/app/scripts/hotbackup/hot_database_backup.sh &amp;<br></code></pre></td></tr></table></figure>
+<p>在后台运行作业时要当心：需要用户交互的命令不要放在后台执行，因为这样你的机器就会在那里傻等。<br>不过，作业在后台运行一样会将结果输出到屏幕上，干扰你的工作。如果放在后台运行的作业会产生大量的输出，最好使用下面的方法把它的输出重定向到某个文件中：<br>如：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">command</span> &gt;out.file <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span> &amp;<br></code></pre></td></tr></table></figure>
+<p>在这个例子中，2&gt;&amp;1表示所有的标准输出和错误输出都将被重定向到一个叫做out.file 的文件中。</p>
+<p><strong>三、2&gt;&amp;1 含义</strong><br>先看一个例子：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span><span class="hljs-number">2</span> * * * /u01/test.sh &gt;/dev/null <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span> &amp;<br></code></pre></td></tr></table></figure>
+<p>这句话的意思就是在后台执行这条命令，并将错误输出2重定向到标准输出1，然后将标准输出1全部放到/dev/null 文件，也就是清空。<br>在这里有有几个数字的意思：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs">0表示 键盘输入<br>1表示 标准输出<br>2表示 错误输出<br></code></pre></td></tr></table></figure>
+<p>我们也可以这样写：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span><span class="hljs-number">2</span> * * *  /u01/test.sh  <span class="hljs-number">1</span>&gt;/u01/<span class="hljs-keyword">out</span>.file  &amp;<br><span class="hljs-symbol">0 </span><span class="hljs-number">2</span> * * *  /u01/test.sh  <span class="hljs-number">2</span>&gt;/u01/<span class="hljs-keyword">out</span>.file  &amp;<br><span class="hljs-symbol">0 </span><span class="hljs-number">2</span> * * *  /u01/test.sh  <span class="hljs-number">2</span>&gt;/u01/<span class="hljs-keyword">out</span>.file  <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span> &amp;<br></code></pre></td></tr></table></figure>
+<p>将tesh.sh 命令输出重定向到out.file, 即输出内容不打印到屏幕上，而是输出到out.file文件中。<br>2&gt;&amp;1 是将错误输出重定向到标准输出。 然后将标准输入重定向到文件out.file。<br>&amp;1 表示的是文件描述1，表示标准输出，如果这里少了&amp;就成了数字1，就表示重定向到文件1。<br>&amp; ：后台执行</p>
+<p>测试：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ls</span> <span class="hljs-number">2</span>&gt;<span class="hljs-number">1</span> ： 不会报没有<span class="hljs-number">2</span>文件的错误，但会输出一个空的文件<span class="hljs-number">1</span>；<br><span class="hljs-attribute">ls</span> xxx <span class="hljs-number">2</span>&gt;<span class="hljs-number">1</span>： 没有xxx这个文件的错误输出到了<span class="hljs-number">1</span>中；<br><span class="hljs-attribute">ls</span> xxx <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span>： 不会生成<span class="hljs-number">1</span>这个文件了，不过错误跑到标准输出了；<br><span class="hljs-attribute">ls</span> xxx &gt;out.txt <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span> == ls xxx <span class="hljs-number">1</span>&gt;out.txt <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span>：  因为重定向符号&gt;默认是<span class="hljs-number">1</span>，这句就把错误输出和标准输出都传到out.txt 文件中。<br></code></pre></td></tr></table></figure>
+<p><strong>四、2&gt;&amp;1写在后面的原因</strong></p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">格式：<span class="hljs-keyword">command</span> &gt; <span class="hljs-keyword">file</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span>   ==  <span class="hljs-keyword">command</span>  <span class="hljs-number">1</span>&gt; <span class="hljs-keyword">file</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>首先是command &gt; file将标准输出重定向到file中， 2&gt;&amp;1 是标准错误拷贝了标准输出，也就是同样被重定向到file中，最终结果就是标准输出和错误都被重定向到file中。<br>如果改成： command 2&gt;&amp;1 &gt;file<br>2&gt;&amp;1 标准错误拷贝了标准输出的行为，但此时标准输出还是在终端。&gt;file 后输出才被重定向到file，但标准错误仍然保持在终端。</p>
+<p>延伸阅读：<br>Shell标准输出、标准错误 &gt;/dev/null 2&gt;&amp;1<br>如何让Linux定时任务crond以秒为单位执行(如每隔3秒)</p>
+<p>经验教训：<br>打算在服务器上 每天晚上23:00 定时执行Python脚本，去备份MySql数据库，命令如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">* <span class="hljs-number">23</span> * * * python <span class="hljs-regexp">/var/</span>www<span class="hljs-regexp">/html/</span>crontab_python<span class="hljs-regexp">/back_db.py &gt;/</span>dev/<span class="hljs-keyword">null</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>结果呢，每次备份都产生了 60份 备份文件，仔细查看定时任务命令，发现在“分”的位置上，少加了个“0”，因为“*”表示该位置的任何一个值，修改如下：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span><span class="hljs-number">23</span> * * * python /var/www/html/crontab_python/back_db.py &gt;/dev/null <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-number">0</span> <span class="hljs-number">4</span> * * * <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/php/</span>bin<span class="hljs-regexp">/php /u</span>sr<span class="hljs-regexp">/local/</span>nginx<span class="hljs-regexp">/www/</span>backup-db<span class="hljs-regexp">/backup_db.php 172.16.8.26 &gt;/</span>dev/<span class="hljs-keyword">null</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span><br><span class="hljs-number">0</span> <span class="hljs-number">4</span> * * * <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/php/</span>bin<span class="hljs-regexp">/php /u</span>sr<span class="hljs-regexp">/local/</span>nginx<span class="hljs-regexp">/www/</span>backup-db<span class="hljs-regexp">/backup_db.php 172.16.10.151 &gt;/</span>dev/<span class="hljs-keyword">null</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/05/07/mysql%E5%A4%84%E7%90%86%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E6%97%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E6%9F%A5%E8%AF%A2%E9%80%9F%E5%BA%A6%E6%96%B9%E6%B3%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">mysql处理海量数据时的一些优化查询速度方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="SOHUCS" sid='https://storyflow.github.io/2017/01/05/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1-Crontab%E5%91%BD%E4%BB%A4-%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      var appid = 'cytCd1mt3';
+      var conf = '1d61dd8b796b9d212a6fae1b83a51843';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+        window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+      } else {
+        Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+          window.changyan.api.config({"appid":"cytCd1mt3","appkey":"1d61dd8b796b9d212a6fae1b83a51843"})
+        });
+      }
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
